@@ -12,7 +12,7 @@ from typing import Optional
 from typing import Tuple
 from typing import Dict
 
-HERE = os.getcwd()
+HERE = os.path.dirname(os.path.abspath(__file__))
 AOC_URL = "https://adventofcode.com"
 
 TOO_QUICK = r"You gave an answer too recently"
