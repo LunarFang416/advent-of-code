@@ -41,10 +41,9 @@ def packet(binary, pointer, total_ver):
 	pointer += 3
 	if id == 4:
 		return literal_packet(binary, pointer, total_ver)
-	else:
-		if binary[pointer] == "0":
-			return operator_packet_mode_1(binary, pointer + 1, total_ver)
-		return operator_packet_mode_2(binary, pointer + 1, total_ver)
+	if binary[pointer] == "0":
+		return operator_packet_mode_1(binary, pointer + 1, total_ver)
+	return operator_packet_mode_2(binary, pointer + 1, total_ver)
 
 def main():
 	raw_data = ""
