@@ -1,18 +1,15 @@
 import pytest
 
-def sum_packet(store):
-	return sum(store)
+def sum_packet(store): return sum(store)
 
 def product_packet(store):
 	s = 1
 	for i in store: s *= i	
 	return s
 
-def minimum_packet(store):
-	return min(store)
+def minimum_packet(store): return min(store)
 
-def maximum_packet(store):
-	return max(store)
+def maximum_packet(store): return max(store)
 
 def literal_packet(binary, pointer):
 	val = ""
@@ -23,24 +20,15 @@ def literal_packet(binary, pointer):
 	pointer += 5
 	return (pointer, int(val, 2))		
 
-def greater_packet(store):
-	return int(store[0] > store[1])
+def greater_packet(store): return int(store[0] > store[1])
 
-def lesser_packet(store):
-	return int(store[0] < store[1])
+def lesser_packet(store): return int(store[0] < store[1])
 
-def equal_packet(store):
-	return int(store[0] == store[1])
+def equal_packet(store): return int(store[0] == store[1])
 
 func_map = {
-	0: sum_packet, 
-	1: product_packet,
-	2: minimum_packet, 
-	3: maximum_packet,
-	4: literal_packet,
-	5: greater_packet,
-	6: lesser_packet,
-	7: equal_packet
+	0: sum_packet, 1: product_packet, 2: minimum_packet, 3: maximum_packet,
+	4: literal_packet, 5: greater_packet, 6: lesser_packet, 7: equal_packet
 }
 
 def hex_to_bin(x):
@@ -92,10 +80,7 @@ def main():
 	(("C200B40A82", 3),("04005AC33890",54), ("880086C3E88112",7), ("CE00C43D881120",9), 
 	("D8005AC2A8F0",1), ("F600BC2D8F",0), ("9C005AC2F8F0", 0), ("9C0141080250320F1802104A08", 1),),
 )
-def test(_input, expected): 
-	assert packet(hex_to_bin(_input), 0, 0)[1] == expected
-
-
+def test(_input, expected): assert packet(hex_to_bin(_input), 0, 0)[1] == expected
 
 if __name__ == "__main__":
 	raise SystemExit(main())

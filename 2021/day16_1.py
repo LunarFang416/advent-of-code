@@ -1,11 +1,11 @@
+import pytest
+
 def hex_to_bin(x):
 	binary = ""
 	for i in x:
-		if i.isalpha():
-			i = 10 + ord(i) - ord('A')
-		i = int(i)
-		b = bin(i)[2:]
-		binary += "0"*(4-len(b))  + b
+		if i.isalpha(): i = 10 + ord(i) - ord('A')
+		b = bin(int(i))[2:]
+		binary += "0"*(4-len(b)) + b
 	return binary
 
 def literal_packet(binary, pointer, total_ver):
@@ -19,23 +19,18 @@ def operator_packet_mode_1(binary, pointer, total_ver):
 	pointer += 15
 	_pointer = pointer
 	while pointer < _pointer + total_len:
-		data = packet(binary, pointer, total_ver)
-		pointer = data[0]
-		total_ver = data[1]
+		pointer, total_ver = packet(binary, pointer, total_ver)
 	return (pointer, total_ver)
 
 def operator_packet_mode_2(binary, pointer, total_ver):
 	total_pack = int(binary[pointer: pointer + 11], 2)
 	pointer += 11
 	for i in range(total_pack):
-		data = packet(binary, pointer, total_ver)
-		pointer = data[0]
-		total_ver = data[1]
+		pointer, total_ver = packet(binary, pointer, total_ver)
 	return (pointer, total_ver)
 
 def packet(binary, pointer, total_ver):
-	ver = int(binary[pointer: pointer + 3], 2)
-	total_ver += ver
+	total_ver += int(binary[pointer: pointer + 3], 2)
 	pointer += 3
 	id = int(binary[pointer: pointer + 3], 2)
 	pointer += 3
@@ -49,8 +44,14 @@ def main():
 	raw_data = ""
 	with open("day16input.txt") as f:
 		raw_data = f.read().strip()
-	binary = hex_to_bin(raw_data)	
-	print(packet(binary, 0, 0))
+	print(packet(hex_to_bin(raw_data), 0, 0))
+
+@pytest.mark.parametrize(
+	('_input', 'expected'),
+	(("8A004A801A8002F478",16),("620080001611562C8802118E34",12),("C0015000016115A2E0802F182340", 23), ("A0016C880162017C3686B18A3D4780", 31), ),
+)
+def test(_input, expected): assert packet(hex_to_bin(_input), 0, 0)[1] == expected
+
 
 if __name__ == "__main__":
 	raise SystemExit(main())
