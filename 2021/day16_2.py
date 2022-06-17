@@ -1,3 +1,5 @@
+import pytest
+
 def sum_packet(store):
 	return sum(store)
 
@@ -44,10 +46,8 @@ func_map = {
 def hex_to_bin(x):
 	binary = ""
 	for i in x:
-		if i.isalpha():
-			i = 10 + ord(i) - ord('A')
-		i = int(i)
-		b = bin(i)[2:]
+		if i.isalpha(): i = 10 + ord(i) - ord('A')
+		b = bin(int(i))[2:]
 		binary += "0"*(4-len(b))  + b
 	return binary
 
@@ -57,22 +57,18 @@ def operator_packet_mode_1(binary, pointer, value, _id):
 	_pointer = pointer
 	value_store = []
 	while pointer < _pointer + total_len:
-		data = packet(binary, pointer, value)
-		pointer = data[0]
-		value_store.append(data[1])
-	final_value = func_map[_id](value_store)
-	return (pointer, final_value)
+		pointer, val = packet(binary, pointer, value)
+		value_store.append(val)
+	return (pointer, func_map[_id](value_store))
 
 def operator_packet_mode_2(binary, pointer, value, _id):
 	total_pack = int(binary[pointer: pointer + 11], 2)
 	pointer += 11
 	value_store = []
 	for i in range(total_pack):
-		data = packet(binary, pointer, value)
-		pointer = data[0]
-		value_store.append(data[1])
-	final_value = func_map[_id](value_store)
-	return (pointer, final_value)
+		pointer, val = packet(binary, pointer, value)
+		value_store.append(val)
+	return (pointer, func_map[_id](value_store))
 
 def packet(binary, pointer, value):
 	pointer += 3
@@ -84,13 +80,22 @@ def packet(binary, pointer, value):
 		return operator_packet_mode_1(binary, pointer + 1, value, id)
 	return operator_packet_mode_2(binary, pointer + 1, value, id)
 
-
 def main():
 	raw_data = ""
 	with open("day16input.txt") as f:
 		raw_data = f.read().strip()
 	binary = hex_to_bin(raw_data)	
 	print(packet(binary, 0, 0))
+
+@pytest.mark.parametrize(
+	('_input', 'expected'),
+	(("C200B40A82", 3),("04005AC33890",54), ("880086C3E88112",7), ("CE00C43D881120",9), 
+	("D8005AC2A8F0",1), ("F600BC2D8F",0), ("9C005AC2F8F0", 0), ("9C0141080250320F1802104A08", 1),),
+)
+def test(_input, expected): 
+	assert packet(hex_to_bin(_input), 0, 0)[1] == expected
+
+
 
 if __name__ == "__main__":
 	raise SystemExit(main())
