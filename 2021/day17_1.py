@@ -1,19 +1,20 @@
 import re
 
-def drag_x(x):
-	if x == 0: return 0
-	elif x > 0: return x - 1
-	else: return x + 1
+def calc(s):
+	p = re.match(r".*x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)", s.strip()).groups()
+	min_x, max_x, min_y, max_y = tuple(map(int, p))
+	h = {}
+	for i in range(min_y, max_y + 1):
+		for steps in range(1, 100):
+			v_y = (i - (0.5) * (-1) * (steps**2)) / steps
+			m = (v_y**2) / 2
+			h[m] = v_y
 
-def gravity_y(y): return y - 1
+	return int(max(h.keys()))	
 
 def main():
 	with open("day17input.txt") as f:
-		p = re.match(r".*x=(-?\d+)..(-?\d+), y=(-?\d+)..(-?\d+)", f.read()).groups()
-		min_x, max_x, min_y, max_y = tuple(map(int, p))
-	print(min_x, max_x, min_y, max_y)
-
-	
+		print(calc(f.read()))
 
 if __name__ == "__main__":
 	raise SystemExit(main())
