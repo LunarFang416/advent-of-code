@@ -9,8 +9,7 @@ def split(l, depth=[]):
 
 def explode(l, depth=[]):
 	if isinstance(l, int): return None
-	if depth and len(depth) >= 4 and isinstance(l[0], int) and isinstance(l[1], int):
-		return depth
+	if depth and len(depth) >= 4 and isinstance(l[0], int) and isinstance(l[1], int): return depth
 	return explode(l[0], [*depth, 0]) or explode(l[1], [*depth, 1])
 
 def do_explode(_sum, depth):
