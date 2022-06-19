@@ -1,4 +1,5 @@
 import ast
+from copy import deepcopy
 
 def split(l, depth=[]):
 	if isinstance(l, int): 
@@ -47,22 +48,26 @@ def magnitude(_sum):
 	if isinstance(_sum, int): return _sum
 	return 3 * magnitude(_sum[0]) + 2 * magnitude(_sum[1])
 
+def reduce(__sum):
+	while explode(__sum) or split(__sum):
+		while explode(__sum):
+			__sum = do_explode(__sum, explode(__sum))
+			continue
+
+		d = split(__sum)
+		if d: __sum = do_split(__sum, d)
+	return __sum
+
 def calc(s):
 	data = []
 	for i in s.split(): data.append(ast.literal_eval(i))
-	_sum = data[0]
-		
-	for a in data[1:]:
-		__sum  = [_sum, a]
-		while explode(__sum) or split(__sum):
-			while explode(__sum):
-				__sum = do_explode(__sum, explode(__sum))
-				continue				
-			
-			d = split(__sum)
-			if d: __sum = do_split(__sum, d)
-		_sum = __sum
-	print(_sum, magnitude(_sum))
+	maximum = 0
+	for idx, a in enumerate(data):
+		for b in data[idx+1:]:
+			maximum = max(maximum, magnitude(reduce([deepcopy(b), deepcopy(a)])))
+			maximum = max(maximum, magnitude(reduce([deepcopy(a), deepcopy(b)])))
+
+	print(maximum)
 		
 def main(): 
 	with open("day18input.txt") as f: calc(f.read())
