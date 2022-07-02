@@ -4,6 +4,7 @@ import pprint
 import os
 import sys
 import re
+import shutil
 import json
 from datetime import datetime
 from decouple import config
@@ -13,12 +14,14 @@ from typing import Tuple
 from typing import Dict
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+BOILERPLATE_FILE = "boilerplate.py"
 AOC_URL = "https://adventofcode.com"
 
 TOO_QUICK = r"You gave an answer too recently"
 WRONG = r"That's not the right answer"
 RIGHT = r"That's the right answer"
 DONE = r"You don't seem to be solving"
+
 
 def get_cookie_headers() -> Dict[str, str]:
 	return {'session' : config('COOKIE')}
@@ -102,8 +105,9 @@ def aoc(argv: Optional[Sequence[str]] = None) -> None:
 
 	download_parser = subparsers.add_parser('download', help="Download AOC Input")
 	submit_parser = subparsers.add_parser('submit', help="Submit AOC Answer")
+	setup_parser = subparsers.add_parser('setup', help="Setup Boilerplate python file for AOC")	
 	
-	for subparser in (download_parser, submit_parser):
+	for subparser in (download_parser, submit_parser, setup_parser):
 		subparser.add_argument(
 			"-y", "--year", type=valid_year_int, 
 			required= not aoc_occuring, 
@@ -120,11 +124,35 @@ def aoc(argv: Optional[Sequence[str]] = None) -> None:
 		type=int, required=True,
 		help="Part of the AOC challenge you want to submit"
 	)
-	
+		
+	setup_parser.add_argument(
+		"-p", "--part", choices=(1, 2),
+		type=int, required=True,
+		help="Part of the AOC challenge you want to setup boilerplate for"
+	)
+
 	args = parser.parse_args(argv)		
 	if aoc_occuring:
 		args.year, args.day = current_aoc()
-	
+
+	if args.command == "setup":
+		dir_path = f"{HERE}/{args.year}"
+		if not os.path.isdir(dir_path):
+			os.mkdir(os.path.join(aoc_dir))
+		filename = f"day{args.day}_{args.part}.py"
+		filepath = f"{dir_path}/{filename}"
+		if os.path.exists(filepath):
+			cont = input("This file already exists, do you want to overwrite it (enter 1 to proceed) :: ")
+			if cont != "1":
+				return 1
+		try:
+			shutil.copyfile(f"{HERE}/{BOILERPLATE_FILE}", filepath)
+			print(f"\033[42mSuccessfuly wrote file at location {filepath}\033[m")
+			return 0
+		except:
+			print(f"An error occured while writing file {filepath}")
+			return 1
+
 	if args.command == 'download':
 		aoc_dir = os.path.join(HERE, str(args.year))
 
