@@ -23,7 +23,7 @@ optional arguments:
   -h, --help            show this help message and exit
 ```
 
-#### File Setup
+### File Setup
 Setup boilerplate for your solution file in python with pytest parametrize configured to test your code against
 sample test cases provided on the AOC challenge page.
 
@@ -38,7 +38,7 @@ optional arguments:
                         Part of the AOC challenge you want to setup boilerplate for
 ```
 
-#### Input Download
+### Input Download
 Download challenge input for any AOC challenge which will be written in the AOC challenge year folder.
 
 ```console
@@ -50,7 +50,7 @@ optional arguments:
   -d DAY, --day DAY     AOC challenge day (1:25).
 ```
 
-#### Solution Submission
+### Solution Submission
 Submit solution for AOC challenge. Will give feedback on whether your submission was correct and will indicate time 
 until you can re-submit your solution if it is incorrect.
 
