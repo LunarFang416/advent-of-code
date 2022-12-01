@@ -10,7 +10,8 @@ def compute(s: str) -> int:
 def test_computer(_input, expected): assert compute(_input) == expected
 
 def main() -> int:
-	with open("input.txt") as f: print(compute(f.read()))
+	with open("day[]input.txt") as f:
+		print(compute(f.read()))
 	return 0
 
 if __name__ == "__main__":

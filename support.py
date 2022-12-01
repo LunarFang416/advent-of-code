@@ -6,6 +6,7 @@ import sys
 import re
 import shutil
 import json
+from subprocess import Popen, PIPE
 from datetime import datetime
 from decouple import config
 from typing import Sequence
@@ -124,64 +125,63 @@ def aoc(argv: Optional[Sequence[str]] = None) -> None:
 		type=int, required=True,
 		help="Part of the AOC challenge you want to submit"
 	)
-		
-	setup_parser.add_argument(
-		"-p", "--part", choices=(1, 2),
-		type=int, required=True,
-		help="Part of the AOC challenge you want to setup boilerplate for"
-	)
 
 	args = parser.parse_args(argv)		
-	if aoc_occuring:
+	if aoc_occuring and (not args.day) and (not args.year):
 		args.year, args.day = current_aoc()
 
 	if args.command == "setup":
-		dir_path = f"{HERE}/{args.year}"
+		dir_path = f"{HERE}/{args.year}/day {args.day}"
 		if not os.path.isdir(dir_path):
-			os.mkdir(os.path.join(aoc_dir))
-		filename = f"day{args.day}_{args.part}.py"
-		filepath = f"{dir_path}/{filename}"
-		if os.path.exists(filepath):
-			cont = input("This file already exists, do you want to overwrite it (enter 1 to proceed) :: ")
-			if cont != "1":
+			os.makedirs(os.path.join(dir_path))
+		part1, part2 = "part1.py", "part2.py"
+		for filepath in [f"{dir_path}/{part1}", f"{dir_path}/{part2}"]:
+			print(filepath)
+			if os.path.exists(filepath):
+				cont = input("This file already exists, do you want to overwrite it (enter 1 to proceed) :: ")
+				if cont != "1": return 1
+			try:
+				shutil.copyfile(f"{HERE}/{BOILERPLATE_FILE}", filepath)
+				print(f"\033[42mSuccessfuly wrote file at location {filepath}\033[m")
+			except:
+				print(f"An error occured while writing file {filepath}")
 				return 1
-		try:
-			shutil.copyfile(f"{HERE}/{BOILERPLATE_FILE}", filepath)
-			print(f"\033[42mSuccessfuly wrote file at location {filepath}\033[m")
-			return 0
-		except:
-			print(f"An error occured while writing file {filepath}")
-			return 1
+		return 0
 
 	if args.command == 'download':
 		aoc_dir = os.path.join(HERE, str(args.year))
-
-		if not os.path.isdir(f"{HERE}/{args.year}"):
-			os.mkdir(os.path.join(aoc_dir))
+		day_dir = f"{HERE}/{args.year}/day {args.day}"
+		if not os.path.isdir(day_dir):
+			os.makedirs(os.path.join(day_dir), exist_ok=True)
 		
 		aoc_input = get_input(args.year, args.day)
 		if aoc_input.status_code != 200:
 			raise requests.exceptions.HTTPError(f"HTTP error {aoc_input.status_code}")
 		
-		with open(f"{aoc_dir}/day{args.day}input.txt", "w") as f:
+		with open(f"{day_dir}/input.txt", "w") as f:
 			f.write(aoc_input.content.decode())
 	
 	if args.command == 'submit':
-		answer = int(input("Enter your answer "))
-		content = post_answer(args.year, args.day, args.part, answer)	
-		
-		if re.search(TOO_QUICK, content):
-			print(re.search(r"<article><p>\s*?(.*)\s*?<a", content).group(1))
-			return 1	
-		
-		if re.search(WRONG, content):
-			print(WRONG)
-			return 1		
+		filepath = f"{HERE}/{args.year}/day {args.day}/part{args.part}.py"
+		process = Popen(["python3", filepath], stdout=PIPE)
+		answer, err = process.communicate()
+		if not err:
+			content = post_answer(args.year, args.day, args.part, answer.decode('utf-8').strip())	
+			if re.search(TOO_QUICK, content):
+				print(re.search(r"<article><p>\s*?(.*)\s*?<a", content).group(1))
+				return 1	
+			
+			if re.search(WRONG, content):
+				print(WRONG)
+				return 1		
 
-		if re.search(RIGHT, content):	
-			print(f'\033[42m{RIGHT}\033[m')
-			return 0
+			if re.search(RIGHT, content):	
+				print(f'\033[42m{RIGHT}\033[m')
+				return 0
+			else:
+				print(re.search(r"<article><p>\s*?(.*)\s*?<a", content).group(1))
+				return 1
 		else:
-			print(re.search(r"<article><p>\s*?(.*)\s*?<a", content).group(1))
+			print(f"Error occured in Execution :: {err}")
 			return 1
 
