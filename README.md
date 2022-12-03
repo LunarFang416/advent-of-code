@@ -1,4 +1,4 @@
-q## Advent of Code - AOC
+## Advent of Code - AOC
 
 These are my [AOC](https://adventofcode.com/) solutions.
 
