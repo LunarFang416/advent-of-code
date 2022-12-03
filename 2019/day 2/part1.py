@@ -2,7 +2,19 @@ import pytest
 import os
 
 def compute(s: str) -> int:
-	pass
+	data = list(map(int, s.strip().split(",")))
+	data[1], data[2] = 12, 2
+	i = 0
+	while i < len(data):
+		if data[i] == 99: return data[0]
+		else:
+			if data[i] == 1:
+				data[data[i + 3]] = data[data[i + 1]] + data[data[i + 2]]
+			else:
+				data[data[i + 3]] = data[data[i + 1]] * data[data[i + 2]]
+			i += 4
+
+	return data[0]
 
 @pytest.mark.parametrize(
 	('_input', 'expected'),

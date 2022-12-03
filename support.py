@@ -1,11 +1,8 @@
 import requests
 import argparse
-import pprint
 import os
-import sys
 import re
 import shutil
-import json
 from subprocess import Popen, PIPE
 from datetime import datetime
 from decouple import config
@@ -184,4 +181,3 @@ def aoc(argv: Optional[Sequence[str]] = None) -> None:
 		else:
 			print(f"Error occured in Execution :: {err}")
 			return 1
-

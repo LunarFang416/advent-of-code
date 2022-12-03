@@ -2,7 +2,10 @@ import pytest
 import os
 
 def compute(s: str) -> int:
-	pass
+	_sum = 0
+	for i in s.strip().split('\n'):
+		_sum += (int(i) // 3) - 2
+	return _sum
 
 @pytest.mark.parametrize(
 	('_input', 'expected'),
@@ -16,4 +19,3 @@ def main() -> int:
 
 if __name__ == "__main__":
 	raise SystemExit(main())
-	
