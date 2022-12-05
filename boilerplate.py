@@ -1,6 +1,8 @@
 import pytest
 import os
 
+INPUT_TXT = f"{os.path.join(os.path.dirname(__file__))}/input.txt"
+
 def compute(s: str) -> int:
 	pass
 
@@ -16,7 +18,7 @@ _EXPECTED = 0
 def test_computer(_input, expected): assert compute(_input) == expected
 
 def main() -> int:
-	with open(f"{os.path.join(os.path.dirname(__file__))}/input.txt") as f: print(compute(f.read()))
+	with open(INPUT_TXT) as f: print(compute(f.read()))
 	return 0
 
 if __name__ == "__main__":
