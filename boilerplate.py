@@ -4,9 +4,14 @@ import os
 def compute(s: str) -> int:
 	pass
 
+_INPUT = """
+"""
+
+_EXPECTED = 0
+
 @pytest.mark.parametrize(
 	('_input', 'expected'),
-	[()],
+	[(_INPUT, _EXPECTED)],
 )
 def test_computer(_input, expected): assert compute(_input) == expected
 
